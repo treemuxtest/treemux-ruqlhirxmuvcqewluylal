@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { AlertTriangle, Shield, Siren, Sparkles } from "lucide-react";
+import { AlertTriangle, Copy, Shield, Siren, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -64,6 +64,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<PlanResponse | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const score = useMemo(() => {
     const base = severity === "SEV-1" ? 82 : severity === "SEV-2" ? 63 : 41;
@@ -106,6 +107,13 @@ export default function Home() {
     setConstraints(s.constraints);
   }
 
+  async function copyConsensus() {
+    if (!result) return;
+    await navigator.clipboard.writeText(result.consensus);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1200);
+  }
+
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_20%_20%,#fef3c7_0%,#fde68a_18%,transparent_40%),radial-gradient(circle_at_80%_0%,#bfdbfe_0%,#c7d2fe_25%,transparent_45%),linear-gradient(120deg,#0f172a,#111827,#1f2937)] p-6 text-white md:p-10">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
@@ -116,6 +124,11 @@ export default function Home() {
             Multi-model incident command copilot for startups. Convert messy outage or security signals
             into a 60-minute execution plan and stakeholder messaging in one click.
           </p>
+          <div className="flex flex-wrap gap-2 text-xs">
+            <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1">Reduces MTTR</span>
+            <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1">SOC2-friendly comms</span>
+            <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1">Board-ready updates</span>
+          </div>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-5">
@@ -225,7 +238,13 @@ export default function Home() {
               <CardContent>
                 {result ? (
                   <>
-                    <p className="mb-2 text-xs text-slate-300">Generated: {new Date(result.generatedAt).toLocaleString()}</p>
+                    <div className="mb-2 flex items-center justify-between gap-2">
+                      <p className="text-xs text-slate-300">Generated: {new Date(result.generatedAt).toLocaleString()}</p>
+                      <Button size="sm" variant="outline" className="border-white/25 bg-white/5 text-white" onClick={copyConsensus}>
+                        <Copy className="mr-1 h-3.5 w-3.5" />
+                        {copied ? "Copied" : "Copy"}
+                      </Button>
+                    </div>
                     <p className="mb-4 text-sm text-emerald-300">{result.confidence}</p>
                     <pre className="max-h-[28rem] overflow-auto whitespace-pre-wrap rounded-xl bg-slate-900 p-3 text-xs leading-6 text-slate-100">
                       {result.consensus}
