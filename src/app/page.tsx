@@ -197,6 +197,44 @@ export default function Home() {
             </Card>
           </div>
         ) : null}
+
+        {result ? (
+          <div className="grid gap-6 lg:grid-cols-2">
+            <Card className="border-slate-700/60 bg-slate-900/70">
+              <CardHeader>
+                <CardTitle>Provider Health</CardTitle>
+                <CardDescription>Live status from each model provider used in consensus.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {result.providers.map((p) => (
+                  <div key={p.provider} className="flex items-center justify-between rounded-lg border border-slate-700/70 bg-slate-950/70 p-3">
+                    <div>
+                      <p className="font-medium">{p.provider}</p>
+                      <p className="text-xs text-slate-400">{p.model}</p>
+                    </div>
+                    <p className={`text-sm ${p.ok ? "text-emerald-300" : "text-rose-300"}`}>{p.ok ? "online" : p.error}</p>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            <Card className="border-slate-700/60 bg-slate-900/70">
+              <CardHeader>
+                <CardTitle>Red-Team Scenarios</CardTitle>
+                <CardDescription>High-risk misuse paths and concrete tests.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {result.consensus.abuseScenarios.map((a) => (
+                  <div key={a.scenario} className="rounded-lg border border-slate-700/70 bg-slate-950/70 p-3">
+                    <p className="font-medium text-slate-100">{a.scenario}</p>
+                    <p className="mt-1 text-sm text-amber-200">Test: {a.redTeamTest}</p>
+                    <p className="mt-1 text-sm text-teal-200">Safeguard: {a.safeguard}</p>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </div>
+        ) : null}
       </section>
     </main>
   );
